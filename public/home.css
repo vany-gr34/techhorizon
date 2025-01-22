@@ -1,0 +1,140 @@
+
+   /* General Styles */
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f9f9f9;
+    color: #333;
+    line-height: 1.6;
+}
+
+a {
+    text-decoration: none;
+    color: #007bff;
+    transition: color 0.3s ease;
+}
+
+a:hover {
+    color: #0056b3;
+}
+
+/* Header Styles */
+#home {
+    background-color: #2c3e50;
+    color: #fff;
+    padding: 20px;
+    text-align: center;
+}
+
+#home h1 {
+    font-size: 2.5rem;
+    margin: 0;
+    font-weight: bold;
+}
+
+#home h1 span {
+    color: #007bff;
+}
+
+#home ul {
+    list-style: none;
+    padding: 0;
+    margin: 20px 0 0;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+#home ul li {
+    display: inline;
+}
+
+#home ul li a {
+    color: #fff;
+    font-weight: bold;
+    padding: 10px 15px;
+    border-radius: 5px;
+    background-color: #007bff;
+    transition: background-color 0.3s ease;
+}
+
+#home ul li a:hover {
+    background-color: #0056b3;
+}
+
+/* Post List Styles */
+ul {
+    list-style: none;
+    padding: 20px;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+ul li {
+    background-color: #fff;
+    margin-bottom: 20px;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+ul li:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+ul li h2 {
+    font-size: 1.75rem;
+    margin: 0 0 10px;
+    color: #2c3e50;
+}
+
+ul li p {
+    font-size: 1rem;
+    color: #666;
+    margin: 0 0 15px;
+}
+
+ul li a {
+    display: inline-block;
+    padding: 10px 15px;
+    background-color: #007bff;
+    color: #fff;
+    border-radius: 5px;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+
+ul li a:hover {
+    background-color: #0056b3;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    #home h1 {
+        font-size: 2rem;
+    }
+
+    #home ul {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    ul {
+        padding: 10px;
+    }
+
+    ul li {
+        padding: 15px;
+    }
+
+    ul li h2 {
+        font-size: 1.5rem;
+    }
+
+    ul li p {
+        font-size: 0.9rem;
+    }
+}
