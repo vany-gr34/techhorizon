@@ -3,16 +3,15 @@
 @section('title', $post->title)
 
 @section('content')
-    <article>
-        <h1>{{ $post->title }}</h1>
-        <p><strong>Category:</strong> {{ $post->category->name ?? 'Uncategorized' }}</p>
-        <p><strong>Author:</strong> {{ $post->user->name ?? 'Unknown' }}</p>
-        <p>{{ $post->content }}</p>
-        
-        @if($post->image)
-            <img src="{{ asset('storage/' . $post->image) }}" alt="{{ $post->title }}" width="600">
-        @endif
-
+<link rel="stylesheet" href="{{ asset('css/post.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <div class="post-container">
+        <article class="post-content">
+            <h1>{{ $post->title }}</h1>
+            <h2>{{ $post->summary }}</h2>
+            <img src="{{ asset('storage/' . $post->image) }}" alt="{{ $post->title }}" class="post-image">
+            <p>{{ $post->content }}</p>
+            </div>
         <a href="/posts">Back home</a>
     </article>
 @endsection

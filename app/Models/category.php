@@ -14,12 +14,21 @@ class category extends Model
     }
     public function manager()
 {
-    return $this->belongsto(User::class, 'User')->where('role', 'manager');
+    return $this->belongsTo(User::class, 'user_id')->where('role', 'manager');
 }
 
 public function subscribers()
 {
-    return $this->belongsToMany(User::class, 'category_user')->where('role', 'subscriber');
+    return $this->belongsToMany(User::class, 'category_user');
 }
+protected $fillable = [
+    'name',
+    'user_id', // Si vous associez une catégorie à un utilisateur (manager)
+];
+protected $except = [
+    'register/step2',
+    'register/step1',
+    'register/submit',
+];
 
 }

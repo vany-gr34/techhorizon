@@ -24,10 +24,13 @@ class User extends Authenticatable
     ];
     
     
-    public function managedCategories()
-{
-    return $this->hasMany(Category::class, 'manager_id');
-}
+  
+    public function category()
+    {
+        return $this->belongsTo(Category::class, 'category_id'); // Vérifie bien la clé étrangère
+    }
+    
+
 
     /**
      * The attributes that should be hidden for serialization.
@@ -47,5 +50,13 @@ class User extends Authenticatable
 {
     return $this->belongsToMany(Interest::class, 'user_interests');
 }
-
+public function categories()
+{
+    return $this->belongsToMany(Category::class, 'category_user');
 }
+public function postsHistory()
+{
+    return $this->hasMany(PostUserHistory::class);
+}
+}
+

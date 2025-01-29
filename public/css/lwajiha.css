@@ -1,0 +1,242 @@
+/* Reset and base styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f5f7fb;
+    color: #333;
+}
+/* Styles for the profile icon */
+.profile-icon {
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.profile-icon i {
+    font-size: 4rem; /* Taille de l'icône */
+    color: rgba(255, 255, 255, 0.8); /* Couleur de l'icône */
+}
+/* Styles for navigation buttons */
+.sidebar nav ul li a,
+.sidebar nav ul li button {
+    display: flex;
+    align-items: center;
+    padding: 0.8rem 1rem;
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    transition: background-color 0.3s;
+    font-size: 0.95rem;
+    width: 100%;
+    text-align: left;
+    gap: 0.8rem; /* Espace entre l'icône et le texte */
+}
+
+.sidebar nav ul li a:hover,
+.sidebar nav ul li button:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Styles for the logout button */
+.logout-button {
+    background: none;
+    border: none;
+    color: inherit;
+    cursor: pointer;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem; /* Espace entre l'icône et le texte */
+    width: 100%;
+    text-align: left;
+}
+
+.logout-button:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+
+
+/* Dashboard layout */
+.dashboard {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* Sidebar styles */
+.sidebar {
+    width: 280px;
+    background-color: #30485f;
+    color: white;
+    padding: 2rem;
+    position: fixed;
+    height: 100vh;
+    overflow-y: auto;
+}
+
+.sidebar h2 {
+    margin-bottom: 2rem;
+    font-size: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.manager-info {
+    background-color: rgba(255, 255, 255, 0.1);
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+}
+
+.manager-info p {
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+}
+
+/* Navigation styles */
+.sidebar nav ul {
+    list-style: none;
+}
+
+.sidebar nav ul li {
+    margin-bottom: 0.5rem;
+}
+
+.sidebar nav ul li a,
+.sidebar nav ul li button {
+    display: block;
+    padding: 0.8rem 1rem;
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    transition: background-color 0.3s;
+    font-size: 0.95rem;
+    width: 100%;
+    text-align: left;
+}
+
+.sidebar nav ul li a:hover,
+.sidebar nav ul li button:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Main content area */
+.content {
+    flex: 1;
+    margin-left: 320px;
+    margin-right: 40px;
+    
+}
+
+.content header {
+    background-color: white;
+    padding: 1.5rem 2rem;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    margin-bottom: 2rem;
+}
+
+.content header h1 {
+    font-size: 1.8rem;
+    color: #2c3e50;
+}
+/* Styles for the statistics grid */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+/* Styles for each stat box */
+.stat-box {
+    background-color: #ffffff;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.stat-box:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.stat-box h3 {
+    font-size: 1.5rem;
+    color: #273c51;
+    margin-bottom: 1rem;
+}
+
+.stat-box p {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #3498db;
+    margin: 0;
+}
+
+.stat-box a {
+    text-decoration: none;
+    color: inherit;
+}
+
+.stat-box a:hover {
+    text-decoration: underline;
+}
+
+/* Responsive design for smaller screens */
+@media (max-width: 768px) {
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .dashboard {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+    }
+
+    .content {
+        margin-left: 0;
+    }
+}
+
+/* Additional utility classes */
+.section {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    margin-bottom: 2rem;
+}
+
+/* Form elements styling */
+button {
+    padding: 0.8rem 1.5rem;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+/* Animation for hover effects */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.content section {
+    animation: fadeIn 0.3s ease-in;
+}

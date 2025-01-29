@@ -6,118 +6,95 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Interest;
 use App\Models\category;
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use App\Models\User;
+use App\Models\Interest;
+use App\Models\Category;
 
 class RegistrationController extends Controller
 {
-    // Step 1: Choose Role
-    public function showStep1()
+    public function registerStep1(Request $request)
     {
-        return view('inscription.step1');
+        // Valider les données de l'étape 1
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|confirmed|min:6',
+            'role' => 'required|in:subscriber,manager',
+        ]);
+
+        // Stocker temporairement les données dans la session
+        session([
+            'registration_data' => $request->only('name', 'email', 'password', 'role'),
+        ]);
+
+        return response()->json(['message' => 'Step 1 completed']);
     }
 
-    public function processStep1(Request $request)
-    {
-        $request->validate(['role' => 'required|in:manager,subscriber']);
-        $request->session()->put('role', $request->role);
-        return redirect()->route('inscription.step2');
-    }
-
-    // Step 2: Personal Information
-    public function showStep2()
-    {
-        return view('inscription.step2');
-    }
-
-    public function processStep2(Request $request)
+    public function registerStep2(Request $request)
 {
-    // Validate the request
-    $request->validate([
-        'name' => 'required|string|max:255',
-        'email' => 'required|email|unique:users,email',
-        'password' => 'required|string|min:8|confirmed',
-    ]);
-     $role = $request->session()->get('role');
-    // Store the data in the session
-    $request->session()->put([
-        'role' => $role,
-        'name' => $request->input('name'),
-        'email' => $request->input('email'),
-        'password' => $request->input('password'), // Store the password in the session
-    ]);
+    try {
+        $role = session('registration_data')['role'] ?? null;
 
-    // Redirect based on the role selected in Step 1
-   
+        if (!$role) {
+            return response()->json(['error' => 'Session expired.'], 400);
+        }
 
-    if ($role === 'subscriber') {
-        return redirect()->route('inscription.step3'); // Redirect to Step 3 for subscribers
-    } elseif ($role === 'manager') {
-        return redirect()->route('inscription.stepM3'); // Redirect to Step M3 for managers
+        if ($role === 'subscriber') {
+            $interests = Interest::all();
+            $html = view('inscription.step3', compact('interests'))->render();
+        } else {
+            $html = view('inscription.stepM3')->render();
+        }
+
+        return response()->json(['html' => $html]);
+
+    } catch (\Exception $e) {
+        return response()->json(['error' => $e->getMessage()], 500);
     }
-
-    // Default fallback redirection
-    return redirect('/')->with('error', 'Invalid role selected.');
-}
-    // Step 3: Interests
-    public function showStep3()
-    {
-        $interests = Interest::all(); // Fetch predefined interests
-        return view('inscription.step3', compact('interests'));
-    }
-    public function showStepM3()
-    {
-        return view('inscription.stepM3'); // Ensure the view exists at resources/views/inscription/stepM3.blade.php
-    }
-    public function processStep3(Request $request)
-{
-    // Validate the selected interests
-    $request->validate([
-        'interests' => 'required|array', // Ensure at least one interest is selected
-        'interests.*' => 'exists:interests,id', // Ensure all selected interests exist in the database
-    ]);
-
-    // Create the user with data from the session
-    $user = User::create([
-        'role' => $request->session()->get('role'),
-        'name' => $request->session()->get('name'),
-        'email' => $request->session()->get('email'),
-        'password' => bcrypt($request->session()->get('password')), // Hash the password
-    ]);
-
-    // Attach the selected interests to the user (using a many-to-many relationship)
-    $user->interests()->sync($request->interests);
-
-    // Clear the session data (optional)
-    $request->session()->forget(['role', 'name', 'email', 'password']);
-    
-
-    // Redirect to the posts page with a success message
-    return redirect()->route('subscriber.dashboard')->with('success', 'Inscription completed!');
 }
 
-    public function processStepM3(Request $request)
+    public function completeRegistration(Request $request)
 {
-    // Validate the category creation form
-    $request->validate([
-        'category_name' => 'required|string|max:255',
-    ]);
+    // Vérifier si les données de session sont présentes
+    $data = session('registration_data');
+    if (!$data) {
+        return redirect()->route('register.step1')->withErrors(['error' => 'Session expired. Please start the registration again.']);
+    }
 
-    // Create the user with data from the session
+    // Vérification si l'email existe déjà
+    $existingUser = User::where('email', $data['email'])->first();
+    if ($existingUser) {
+        return redirect()->back()->withErrors(['email' => 'The email address is already in use.']);
+    }
+
+    // Créer l'utilisateur
     $user = User::create([
-        'role' => $request->session()->get('role'),
-        'name' => $request->session()->get('name'),
-        'email' => $request->session()->get('email'),
-        'password' => bcrypt($request->session()->get('password')), // Hash the password
+        'name' => $data['name'],
+        'email' => $data['email'],
+        'password' => bcrypt($data['password']),
+        'role' => $data['role'],
     ]);
 
-    // Create the category for the manager
-    $category = Category::create([
-        'name' => $request->input('category_name'),
-        'manager_id' => $user->id, // Associate the category with the manager
-    ]);
+    // Si l'utilisateur est un subscriber, attacher les intérêts
+    if ($data['role'] === 'subscriber') {
+        // Sauvegarder les intérêts
+        $request->validate(['interests' => 'required|array']);
+        $user->interests()->attach($request->interests);
+        return redirect()->route('subscriber.dashboard')->with('success', 'Registration complete!');
+    } else {
+        // Sauvegarder la catégorie pour le manager
+        $request->validate(['category_name' => 'required|string|max:255']);
+        Category::create([
+            'name' => $request->category_name,
+            'user_id' => $user->id,
+        ]);
+        return redirect()->route('manager.dashboard')->with('success', 'Registration complete!');
+    }
 
-    // Clear the session data (optional)
-    $request->session()->forget(['role', 'name', 'email', 'password']);
-
-    // Redirect to the manager dashboard
-    return redirect()->route('manager.dashboard')->with('success', 'Category created and registration completed!');
-}}
+    // Nettoyer la session
+    session()->flush();
+}
+}

@@ -1,0 +1,148 @@
+/* Styles globaux */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 20px;
+    color: #333;
+}
+
+/* Conteneur principal */
+.article-details {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* En-tête de l'article */
+.article-header {
+    background-image: url('/images/devops4.png');
+    background-size: cover;
+    background-position: center;
+    padding: 10px;
+    color: white;
+    text-align: left;
+    border-bottom: 2px solid #ddd;
+}
+
+.article-header h1 {
+    margin: 0;
+    font-size: 2.5em;
+}
+
+.article-header .author, .article-header .publication-date {
+    font-size: 1.2em;
+    margin: 5px 0;
+}
+
+/* Titre de l'article */
+.article-details h1 {
+    font-size: 39px;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    margin-bottom: 20px;
+    margin-top: 10px;
+    color: #92d8e7;
+}
+
+/* Informations sur l'auteur et la date */
+.article-details p {
+    font-size: 14px;
+    color: #aaf0fe;
+    margin-bottom: 4px;
+    text-align: left;
+}
+
+/* Contenu de l'article */
+.article-details .content {
+    font-size: 18px;
+    line-height: 1.8;
+    margin-bottom: 20px;
+    color: #333;
+    max-width: 100%;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+}
+
+.article-details .content p {
+    margin-bottom: 1rem;
+}
+
+/* Section des commentaires */
+.comments-section {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.comments-section h2 {
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: #2c3e50;
+}
+
+/* Commentaire individuel */
+.comment {
+    padding: 15px;
+    margin-bottom: 15px;
+    background-color: #f9f9f9;
+    border-radius: 4px;
+    border-left: 4px solid #3498db;
+}
+
+.comment p {
+    margin: 0;
+    font-size: 14px;
+    color: #333;
+}
+
+.comment p strong {
+    color: #2c3e50;
+}
+
+.comment p small {
+    color: #666;
+    font-size: 12px;
+}
+
+/* Boutons d'approbation et de rejet */
+.comment form {
+    margin-top: 10px;
+}
+
+.comment button {
+    padding: 5px 10px;
+    margin-right: 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.comment button[type="submit"] {
+    background-color: #3498db;
+    color: #fff;
+}
+
+.comment button[type="submit"]:hover {
+    background-color: #2980b9;
+}
+
+.comment button[type="submit"][formaction*="reject"] {
+    background-color: #e74c3c;
+}
+
+.comment button[type="submit"][formaction*="reject"]:hover {
+    background-color: #c0392b;
+}
+
+/* Message si aucun commentaire */
+.comments-section p {
+    font-size: 14px;
+    color: #666;
+}

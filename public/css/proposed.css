@@ -1,0 +1,87 @@
+:root {
+    --primary-blue: #6c73b9;
+    --primary-dark: #012970;
+    --text-color: #444444;
+    --light-bg: #f6f9ff;
+  }
+ .articles-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+    padding: 50px;
+    background: var(--light-bg);
+  }
+  
+  .article-box {
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+    position: relative;
+    min-height: 300px;
+    cursor: pointer;
+  }
+  
+  .article-box::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: var(--bg-image); /* Utilise la variable CSS */
+    background-size: cover;
+    background-position: center;
+    z-index: 1; /* Place l'arrière-plan derrière le contenu */
+  }
+  .article-box input[type="checkbox"] {
+    margin-right: 10px; /* Un espace entre la case à cocher et le contenu */
+    transform: scale(1.2); /* Rendre la case plus visible, si nécessaire */
+}
+  
+  .article-content {
+    position: relative;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.9);
+    height: 100%;
+    transform: translateY(60%);
+    transition: transform 0.3s ease;
+    z-index: 2; /* Place le contenu au-dessus de l'arrière-plan */
+  }
+  
+  .article-box:hover .article-content {
+    transform: translateY(0);
+  }
+  
+  .article-content h2 {
+    color: var(--primary-dark);
+    margin: 0 0 15px 0;
+    font-size: 20px;
+  }
+  
+  .article-content p {
+    margin: 10px 0;
+    color: var(--text-color);
+  }
+  /* Conteneur pour la case à cocher */
+.checkbox-container {
+    position: absolute; /* Place la checkbox dans le coin de l'article */
+    top: 10px;
+    left: 10px;
+    z-index: 3; /* S'assurer qu'elle est au-dessus de tout */
+    background: rgba(255, 255, 255, 0.8); /* Fond pour plus de contraste */
+    border-radius: 4px;
+    padding: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Case à cocher spécifique */
+.checkbox-container input[type="checkbox"] {
+    cursor: pointer; /* Indique que c'est cliquable */
+    transform: scale(1.2); /* Agrandir légèrement pour la visibilité */
+}
+
+/* Empêcher la case à cocher d'affecter le hover */
+.article-box:hover .checkbox-container {
+    transform: none; /* Pas d'effet de survol sur la checkbox */
+}

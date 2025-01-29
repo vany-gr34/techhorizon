@@ -39,7 +39,7 @@ class LoginController extends Controller
         // If authentication fails, redirect back with an error
         return back()->withErrors([
             'email' => 'These credentials do not match our records.',
-            dd($request->all())
+            
         ]);
     }
 

@@ -1,0 +1,77 @@
+/* Styles globaux */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 20px;
+}
+
+/* Conteneur principal */
+.articles-list {
+    max-width: 1200px;
+    margin: auto;
+}
+
+/* Liste d'articles */
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+/* Élément d'article */
+.article-item {
+    position: relative;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: transform 0.3s ease;
+}
+
+.article-item:hover {
+    transform: scale(1.02);
+}
+
+/* Image de fond */
+.article-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: inherit; /* Utiliser l'image de fond du div parent */
+    background-size: cover;
+    background-position: center;
+    filter: brightness(0.7);
+}
+
+/* Contenu de l'article */
+.article-content {
+    position: relative;
+    padding: 20px;
+    color: white; /* Couleur du texte */
+}
+
+.article-content h3 {
+    font-size: 24px;
+    margin-bottom: 10px;
+    color: #76d9e0; /* Couleur du texte (blanc pur) */
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7); /* Ombre portée pour améliorer la lisibilité */
+}
+
+.article-summary,
+.article-main-content {
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+/* Évaluation de l'article */
+.article-rating {
+    font-weight: bold;
+}
+
+/* Message si aucun article trouvé */
+.no-articles {
+    text-align: center;
+    font-size: 18px;
+}

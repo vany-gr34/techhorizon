@@ -1,0 +1,167 @@
+/* Reset global styles */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+    color: #333;
+    
+}
+
+/* Main container */
+.article-container {
+    width: 90%;
+    padding: 0;
+    margin: 15px;
+    margin-bottom:5px;
+    
+}
+
+.article-details {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    background-color: #ffffff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+
+/* Article header */
+.article-header {
+    background-image: url('/images/devops4.png');
+    background-size: cover;
+    background-position: center;
+    padding: 2rem;
+    color: white;
+    text-align: left;
+    position: relative;
+}
+
+/* Add overlay for better text readability */
+.article-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1;
+}
+
+.article-header > * {
+    position: relative;
+    z-index: 2;
+}
+
+.article-header h1 {
+    font-size: 39px;
+    font-family: 'Lucida Sans', sans-serif;
+    margin: 0 0 20px 0;
+    color: #ffffff;
+    text-align: center;
+}
+.article-header p {
+    font-size: 14px;
+    color: #ffffff;
+    margin-bottom: 4px;
+}
+
+/* Article content */
+.article-details .content {
+    margin-left: 0 !important; /* Supprimer la marge héritée */
+    padding: 2rem;
+    font-size: 16px;
+    line-height: 1.6;
+    color: #333;
+}
+
+/* Rating section */
+.rating-section {
+    padding: 0 2rem;
+    text-align: left;
+}
+
+.rating-section p {
+    color: #333;
+    margin: 1rem 0;
+}
+
+/* Comments section */
+.comments-section {
+    width: 100%;
+    margin: 0;
+    padding: 2rem;
+    background-color: #fff;
+}
+
+.comments-section h2 {
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: #2c3e50;
+}
+
+/* Individual comments */
+.comment {
+    padding: 15px;
+    margin-bottom: 15px;
+    background-color: #f9f9f9;
+    border-radius: 4px;
+    border-left: 4px solid #3498db;
+}
+
+.comment p {
+    margin: 0;
+    font-size: 14px;
+    color: #333;
+}
+
+.comment p strong {
+    color: #2c3e50;
+}
+
+.comment p small {
+    color: #666;
+    font-size: 12px;
+}
+
+/* Comment buttons */
+.comment-actions {
+    margin-top: 10px;
+}
+
+.comment-actions form {
+    display: inline-block;
+    margin-right: 10px;
+}
+
+.btn-approve, .btn-reject {
+    padding: 5px 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    color: #fff;
+}
+
+.btn-approve {
+    background-color: #3498db;
+}
+
+.btn-approve:hover {
+    background-color: #2980b9;
+}
+
+.btn-reject {
+    background-color: #e74c3c;
+}
+
+.btn-reject:hover {
+    background-color: #c0392b;
+}
+
+.no-comments {
+    font-size: 14px;
+    color: #666;
+    padding: 1rem 0;
+}

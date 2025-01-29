@@ -3,78 +3,154 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inscription Step 1</title>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>Step 1: Register</title>
     <style>
-        /* Container for the button group */
-        .button-group {
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f4f8;
             display: flex;
-            gap: 10px; /* Space between buttons */
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
         }
-
-        /* Style for the radio button labels */
-        .radio-button {
-            display: inline-block;
-            padding: 10px 20px;
-            background-color: #f0f0f0; /* Default background color */
-            border: 2px solid #ccc; /* Default border */
-            border-radius: 5px; /* Rounded corners */
-            cursor: pointer;
+        .register-container {
+            background-color: #ffffff;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+        h1 {
+            color: #1e3a8a;
             text-align: center;
-            transition: background-color 0.3s, border-color 0.3s;
+            margin-bottom: 1.5rem;
         }
-
-        /* Hide the actual radio button */
-        .radio-button input {
-            display: none;
+        .welcome-message {
+            color: #3b82f6;
+            text-align: center;
+            margin-bottom: 1.5rem;
+            font-style: italic;
         }
-
-        /* Style for the selected radio button */
-        .radio-button input:checked + span {
-            background-color: #007bff; /* Active background color */
-            color: white; /* Active text color */
-            border-color: #007bff; /* Active border color */
+        form {
+            display: flex;
+            flex-direction: column;
         }
-
-        /* Style for the span inside the label */
-        .radio-button span {
-            display: block;
-            padding: 5px 10px;
-            border-radius: 3px;
+        label {
+            color: #1e3a8a;
+            margin-bottom: 0.5rem;
         }
-
-        /* Style for the Next button */
-        .next-button {
-            margin-top: 20px;
-            padding: 10px 20px;
-            background-color: #007bff;
+        input, select {
+            padding: 0.75rem;
+            margin-bottom: 1rem;
+            border: 1px solid #cbd5e1;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        button {
+            background-color: #1e3a8a;
             color: white;
+            padding: 0.75rem;
             border: none;
-            border-radius: 5px;
+            border-radius: 4px;
+            font-size: 1rem;
             cursor: pointer;
-            transition: background-color 0.3s;
+            transition: background-color 0.3s ease;
         }
-
-        .next-button:hover {
-            background-color: #0056b3; /* Darker shade on hover */
+        button:hover {
+            background-color: #1e40af;
+        }
+        .error {
+            color: #ef4444;
+            margin-top: -0.5rem;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
         }
     </style>
 </head>
 <body>
-    <form action="{{ route('inscription.step1.submit') }}" method="POST">
-        @csrf
-        <div class="button-group">
-            <label class="radio-button">
-                <input type="radio" name="role" value="manager" required>
-                <span>Manager</span>
-            </label>
-            <label class="radio-button">
-                <input type="radio" name="role" value="subscriber" required>
-                <span>Subscriber</span>
-            </label>
-        </div>
-        <div class="mt-3">
-            <button type="submit" class="next-button">Next</button>
-        </div>
-    </form>
+    <div class="register-container">
+        <h1>Step 1: Register</h1>
+        <p class="welcome-message">Welcome! Let's get you started on your journey.</p>
+        <form id="registrationForm" method="POST" action="{{ route('register.step1') }}">
+            @csrf
+            <div>
+                <label for="name">Name</label>
+                <input type="text" id="name" name="name" required>
+            </div>
+
+            <div>
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+
+            <div>
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+
+            <div>
+                <label for="password_confirmation">Confirm Password</label>
+                <input type="password" id="password_confirmation" name="password_confirmation" required>
+            </div>
+
+            <div>
+                <label for="role">Choose Role</label>
+                <select id="role" name="role" required>
+                    <option value="subscriber">Subscriber</option>
+                    <option value="manager">Manager</option>
+                </select>
+            </div>
+
+            <button type="button" id="nextButton">Next</button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('nextButton').addEventListener('click', function() {
+            document.getElementById('registrationForm').submit();
+        });
+    </script>
 </body>
 </html>
+
+
+
+<div id="step2"></div>
+
+<script>
+   document.getElementById('nextButton').addEventListener('click', function () {
+    const formData = new FormData(document.getElementById('registrationForm'));
+
+    fetch("{{ route('register.step2') }}", {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            'Accept': 'application/json'
+        },
+        body: formData
+    })
+    .then(response => {
+    const contentType = response.headers.get("content-type");
+    if (!contentType || !contentType.includes("application/json")) {
+        throw new Error("Session expirée ou réponse invalide");
+    }
+    return response.json();
+})
+// 🔥 ERREUR ICI si la réponse est HTML au lieu de JSON
+    .then(data => {
+        if (data.error) {
+            console.error('Erreur Laravel:', data.error);
+            alert('Erreur: ' + data.error);
+        } else {
+            document.getElementById('step2').innerHTML = data.html;
+        }
+    })
+    .catch(error => console.log('Erreur JS:', error));
+});
+
+</script>
+
+
