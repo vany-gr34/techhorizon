@@ -31,7 +31,7 @@
                 @if ($post->status != 'public')
                     <form method="POST" action="{{ route('articles.activate', $post->id) }}">
                         @csrf
-                        <button type="submit" style="background-color: blue; color: white; padding: 5px 10px; border: none; border-radius: 5px; cursor: pointer;">
+                        <button type="submit" style="background-color: #012970; color: white; padding: 5px 10px; border: none; border-radius: 5px; cursor: pointer;">
                             Rendre Public
                         </button>
                     </form>

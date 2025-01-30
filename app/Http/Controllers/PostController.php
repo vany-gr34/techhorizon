@@ -11,8 +11,7 @@ class PostController extends Controller
     {
         $proposedArticles = post::where('status', 'proposed')->get();
         return view('editor.proposed', compact('proposedArticles'));
-    }
-    public function showPublic()
+    }  public function showPublic()
 {
     $categories = Category::with(['posts' => function ($query) {
         $query->where('status', 'public');
@@ -20,6 +19,7 @@ class PostController extends Controller
 
     return view('invite.public', compact('categories'));
 }
+  
 public function articlesDesAbonnes()
 {
     // Récupérer les articles avec le statut "pending"

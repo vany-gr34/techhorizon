@@ -51,7 +51,7 @@ function updateStatus(event, postId) {
     const token = document.querySelector('input[name="_token"]').value;
     
     // Utilisation de la route correcte
-    fetch(`/manager/post/update-status/${postId}`, {
+    fetch(`/manager/post/update-status/${postId}`,{
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

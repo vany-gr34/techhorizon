@@ -4,6 +4,7 @@
 @section('title', 'Proposed Articles')
 
 @section('content')
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="{{ asset('css/proposed.css') }}">
 
 <h1>Créer une Nouvelle Collection</h1>

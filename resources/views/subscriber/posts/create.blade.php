@@ -7,107 +7,158 @@
 
 
     <style>
-/* Style général */
+:root {
+  --primary-color: #3498db;
+  --secondary-color: #2c3e50;
+  --background-color: #ecf0f1;
+  --text-color: #34495e;
+  --input-bg: #fff;
+  --input-border: #bdc3c7;
+  --input-focus: #3498db;
+  --button-hover: #2980b9;
+  --shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+  --transition: all 0.3s ease;
+}
+
 body {
-    font-family: 'Arial', sans-serif;
-    background-color: #e3f2fd; /* Bleu clair */
-    margin: 0;
-    padding: 0;
-    color: #0d47a1; /* Bleu foncé */
-    line-height: 1.6;
+  font-family: 'Poppins', sans-serif;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  line-height: 1.6;
+  margin: 0;
+  padding: 0;
 }
 
-/* Conteneur principal */
 .container {
-    max-width: 800px;
-    margin: 50px auto;
-    background: white;
-    padding: 30px;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  max-width: 800px;
+  margin: 50px auto;
+  background: var(--input-bg);
+  padding: 40px;
+  border-radius: 12px;
+  box-shadow: var(--shadow);
 }
 
-/* Titre principal */
 h1 {
-    text-align: center;
-    color: #0d47a1;
-    font-size: 2rem;
-    margin-bottom: 20px;
+  text-align: center;
+  color: var(--secondary-color);
+  font-size: 2.5rem;
+  margin-bottom: 30px;
+  font-weight: 600;
 }
 
-/* Formulaire */
 form {
-    width: 100%;
+  display: grid;
+  gap: 25px;
 }
 
 .form-group {
-    margin-bottom: 20px;
+  position: relative;
 }
 
 label {
-    display: block;
-    font-weight: bold;
-    margin-bottom: 5px;
-    color: #1565c0; /* Bleu moyen */
+  display: block;
+  font-weight: 500;
+  margin-bottom: 8px;
+  color: var(--secondary-color);
+  transition: var(--transition);
 }
 
-input[type="text"], textarea, select {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #90caf9; /* Bordure bleue claire */
-    border-radius: 5px;
-    font-size: 1rem;
-    color: #0d47a1;
-    background-color: #f6fbff;
-    transition: border-color 0.3s ease;
+input[type="text"],
+textarea,
+select,
+input[type="file"] {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid var(--input-border);
+  border-radius: 8px;
+  font-size: 1rem;
+  color: var(--text-color);
+  background-color: var(--input-bg);
+  transition: var(--transition);
 }
 
-input[type="text"]:focus, textarea:focus, select:focus {
-    border-color: #1565c0;
-    outline: none;
-    box-shadow: 0 0 5px rgba(21, 101, 192, 0.3);
+input[type="text"]:focus,
+textarea:focus,
+select:focus {
+  border-color: var(--input-focus);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
 }
 
 textarea {
-    resize: vertical;
+  resize: vertical;
+  min-height: 120px;
 }
 
-/* Boutons */
+select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%2334495e' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 16px;
+}
+
+input[type="file"] {
+  padding: 10px;
+  font-size: 0.9rem;
+}
+
+input[type="file"]::-webkit-file-upload-button {
+  visibility: hidden;
+  margin-right: 15px;
+}
+
+input[type="file"]::before {
+  content: 'Choisir un fichier';
+  display: inline-block;
+  background: var(--primary-color);
+  color: white;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
 button[type="submit"] {
-    display: inline-block;
-    width: 100%;
-    padding: 12px 20px;
-    background-color: #1565c0; /* Bleu foncé */
-    color: white;
-    border: none;
-    border-radius: 5px;
-    font-size: 1.2rem;
-    font-weight: bold;
-    cursor: pointer;
-    text-transform: uppercase;
-    transition: background-color 0.3s ease, transform 0.2s ease;
+  width: 100%;
+  padding: 14px 20px;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 button[type="submit"]:hover {
-    background-color: #0d47a1;
-    transform: scale(1.02);
+  background-color: var(--button-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
 }
 
-/* Responsive */
 @media (max-width: 768px) {
-    .container {
-        padding: 20px;
-    }
+  .container {
+    padding: 30px;
+    margin: 30px 15px;
+  }
 
-    h1 {
-        font-size: 1.8rem;
-    }
+  h1 {
+    font-size: 2rem;
+  }
 
-    button[type="submit"] {
-        font-size: 1rem;
-    }
+  input[type="text"],
+  textarea,
+  select,
+  input[type="file"],
+  button[type="submit"] {
+    font-size: 0.95rem;
+  }
 }
 </style>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
         <h1>Proposer un Article</h1>
 
         <!-- Formulaire de soumission d'un article -->

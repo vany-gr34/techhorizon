@@ -33,11 +33,15 @@ class post extends Model
      // Relation avec les messages
      public function messages()
      {
-         return $this->hasMany(Message::class)->where('approved', true);
+         return $this->hasMany(Message::class,'post_id');
      }
      public function userRating()
 {
     return $this->hasOne(Rating::class)->where('user_id', auth()->id());
+}
+public function approvedMessages()
+{
+    return $this->hasMany(Message::class)->where('approved', true);
 }
 }  
 

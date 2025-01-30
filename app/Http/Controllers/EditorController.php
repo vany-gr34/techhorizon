@@ -4,17 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Models\category;
 use App\Models\Collection;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use App\Models\post;
 use Illuminate\Http\Request;
 use App\Models\User;
 class EditorController extends Controller
 {
-    public function index()
-    {
-        return view('editor.dashboard'); // Remplacez par la vue pour l'éditeur
-
-    }
+    
     
  
 // 3lch knt zidt had fonctionalite hna is her what cuz the problem checkitt
@@ -122,14 +118,6 @@ public function activate($id)
 
     return redirect()->back()->with('success', 'L\'article a été rendu public avec succès.');
 }
-public function assignManager(Request $request)
-{
-    $category = Category::findOrFail($request->category_id);
-    $category->user_id = $request->manager_id;
-    $category->save();
-
-    return response()->json(['success' => true]);
-}
 
 public function delete($id)
 {
@@ -153,36 +141,37 @@ public function delete($id)
         return response()->json(['success' => false, 'message' => 'Erreur lors de la suppression.']);
     }
 }
-
 public function addManager(Request $request)
 {
-    $validated = $request->validate([
-        'name' => 'required|string|max:255',
-        'email' => 'required|email|unique:users,email',
-        'password' => 'required|string|min:8',
-        'categoryName' => 'required|string|max:255', // Validation pour le nom de la catégorie
-    ]);
-
     try {
-        // Création du manager
+        // Log pour voir les données reçues
+        \Log::info($request->all());
+
+        // Vérifier si la catégorie est envoyée
+        if (!$request->has('category')) {
+            return response()->json(['success' => false, 'message' => 'Category is missing.'], 400);
+        }
+
+        // Créer le manager
         $manager = User::create([
-            'name' => $validated['name'],
-            'email' => $validated['email'],
-            'password' => bcrypt($validated['password']),
-            'role' => 'manager', // Assurez-vous que le rôle est correctement défini
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => bcrypt($request->password),
         ]);
-        $manager->save();
-        // Création de la catégorie associée
+
+        // Créer la catégorie et l'associer
         $category = Category::create([
-            'name' => $validated['categoryName'],
-            'user_id' => $manager->id, // Associe la catégorie au manager
+            'name' => $request->category,
+            'manager_id' => $manager->id,
         ]);
-        $category->save();
-        return response()->json(['success' => true, 'message' => 'Manager and category created successfully.']);
+
+        return response()->json(['success' => true, 'manager' => $manager, 'category' => $category]);
     } catch (\Exception $e) {
-        return response()->json(['success' => false, 'message' => 'An error occurred: ' . $e->getMessage()]);
+        \Log::error($e);
+        return response()->json(['success' => false, 'message' => 'Server error.'], 500);
     }
 }
+
 
 public function searchManager(Request $request)
 {

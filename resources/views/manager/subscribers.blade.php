@@ -5,7 +5,7 @@
 @section('header-title', 'Subscribers')
 
 @section('content')
-<link rel="stylesheet" href="{{ asset('css/subscribers.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/subscribers.css') }}">
 
     <div class="subscribers-list">
 
@@ -20,18 +20,20 @@
             </thead>
             <tbody>
                 @foreach($subscribers as $subscriber)
-                    <tr>
-                        <td>{{ $subscriber->name }}</td>
-                        <td>{{ $subscriber->email }}</td>
-                        <td>{{ $subscriber->created_at?->format('d/m/Y') }}</td>
-                        <td>
-                            <form action="{{ route('subscribers.destroy', $subscriber->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this subscriber?');">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-danger">Delete</button>
-                            </form>
-                        </td>
-                    </tr>
+                    @if ($subscriber->user_id) <!-- Vérifier si l'utilisateur existe -->
+                        <tr>
+                            <td>{{ $subscriber->user->name }}</td>
+                            <td>{{ $subscriber->user->email }}</td>
+                            <td>{{ $subscriber->created_at->format('d/m/Y') }}</td>
+                            <td>
+                                <form action="{{ route('manager.subscribers.destroy', ['userId' => $subscriber->user->id, 'category' => $subscriber->category_id]) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this subscriber?');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-danger">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                    @endif
                 @endforeach
             </tbody>
         </table>

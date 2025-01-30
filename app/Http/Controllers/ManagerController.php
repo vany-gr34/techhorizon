@@ -6,6 +6,7 @@ use App\Models\Post;
 use App\Models\User;
 use App\Models\Category;
 use App\Models\Message;
+use Illuminate\Support\Facades\Log;
 
 class ManagerController extends Controller
 {
@@ -31,7 +32,7 @@ class ManagerController extends Controller
             $subscribersCountForCategory = $category->subscribers()->count();
 
             // Nombre d'articles pour cette catégorie
-            $postCountForCategory = Post::where('category_id', $categoryId)->where('status', 'accepted')->count();
+            $postCountForCategory = Post::where('category_id', $categoryId)->where('stat', 'accepted')->count();
 
             $mostRatedArticles = collect();
     
@@ -58,7 +59,7 @@ class ManagerController extends Controller
 
             // Nombre d'articles des abonnés avec un statut pending
             $subscribersArticlesCount = Post::where('category_id', $categoryId)
-            ->where('status', 'pending')  // Si 'pending' 
+            ->where('stat', 'pending')  // Si 'pending' 
             ->count()           
             ;
         }
@@ -97,35 +98,28 @@ class ManagerController extends Controller
     }
 
     public function showArticle($id)
-    {
-        // Récupérer l'article spécifique
-        $post = Post::with('user')->findOrFail($id);
-            // Charge les commentaires avec l'article
-        $post->load('comments.user'); // Charge les commentaires et leurs utilisateurs associés
-
-        // Retourner la vue avec les détails de l'article
-        return view('manager.article-details', compact('post'));
-    }
-
-    public function showSubscribers()
-    {
-        // Récupérer le manager connecté
+    {      // Récupérer le manager connecté
         $manager = auth()->user();
 
         // Récupérer la catégorie du manager
         $category = Category::where('user_id', $manager->id)->first();
-
-        // Initialiser la variable des abonnés
-        $subscribers = collect();
-
-        if ($category) {
-            // Récupérer les abonnés liés à la catégorie du manager
-            $subscribers = $category->subscribers;
-        }
-
-        // Retourner la vue avec les abonnés
-        return view('manager.subscribers', compact('subscribers','category','manager'));
-    }
+        // Récupérer l'article spécifique avec ses relations
+        $post = Post::with(['user', 'ratings', 'messages.user'])
+                    ->findOrFail($id);
+        
+        // Calculer la moyenne des évaluations pour cet article
+        $post->average_rating = $post->ratings->avg('note') ?? 0; // Calculer la moyenne des notes
+    
+        // Récupérer la note de l'utilisateur connecté (si elle existe)
+        $userRating = $post->ratings->where('user_id', auth()->id())->first();
+        
+        // Charger les commentaires approuvés avec l'article
+        
+       
+    
+        // Retourner la vue avec les détails de l'article
+        return view('manager.article-details', compact('post', 'userRating','manager','category'));
+}
 
 
     public function logout(Request $request)
@@ -161,7 +155,7 @@ class ManagerController extends Controller
                 ->get()
                 ->map(function ($post) {
                     // Calculer la moyenne des évaluations
-                    $post->average_rating = $post->ratings->avg('value'); // Supposons que 'value' contient la note (1 à 5)
+                    $post->average_rating = $post->ratings->avg('rating') ?? 0 ; // Supposons que 'value' contient la note (1 à 5)
                     return $post;
                 })
                 ->sortByDesc('average_rating') // Trier par la moyenne des évaluations
@@ -172,7 +166,6 @@ class ManagerController extends Controller
         return view('manager.most-rated-articles', compact('mostRatedArticles','category','manager'));
     }    
     
-
     public function subscribersArticles(Request $request)
     {
         // Récupérer le manager connecté
@@ -187,67 +180,160 @@ class ManagerController extends Controller
         if ($category) {
             // Récupérer les articles des abonnés pour cette catégorie
             $posts = Post::where('category_id', $category->id)
+                            ->where('stat', 'pending')
                             ->with('user')
                             ->get();
-                            
         }
 
         // Retourner la vue avec les articles des abonnés
         return view('manager.subscribers-articles', compact('posts','category','manager'));
     }
-    public function updateArticleStatus(Request $request, $id)
+    public function approveComment(Post $post, Message $message)
     {
-            // Debug : vérifier les données reçues
-            \Log::info('Requête reçue pour l\'article ' . $id, $request->all());
-        
-            // Validation de l'action
-            $validated = $request->validate([
-                'action' => 'required|in:accept,reject,propose',
-            ]);
-        
-            \Log::info('Action validée : ' . $validated['action']);
-        
-            // Récupérer l'article
-            $post = Post::findOrFail($id);
-        
-            // Debug : vérifier si l'article est trouvé
-            \Log::info('Article trouvé : ' . $post->title);
-        
-            // Mise à jour du statut
-            switch ($request->action) {
-                case 'accept':
-                    $post->status = 'Accepted';
-                    break;
-                case 'reject':
-                    $post->status = 'Rejected';
-                    break;
-                case 'propose':
-                    $post->status = 'Proposed';
-                    break;
-            }
-        
-            $post->save();
-        
-            \Log::info('Statut mis à jour : ' . $post->status);
-        
-            // Retourner une réponse JSON
+        // Vérifier que le message appartient bien à l'article
+        if ($message->post_id !== $post->id) {
             return response()->json([
-                'success' => true,
-                'message' => 'Statut mis à jour avec succès',
-                'status' => $post->status,
-            ]);
-        }
-
-        public function approveComment(Post $article, Message $comment)
-        {
-            $comment->update(['approved' => true]);
-            return redirect()->route('articles.show', $article)->with('success', 'Comment approved.');
+                'success' => false,
+                'message' => 'Unauthorized action.'
+            ], 403);
         }
     
-        public function rejectComment(post $article, Message $comment)
-        {
-            $comment->delete();
-            return redirect()->route('articles.show', $article)->with('success', 'Comment rejected.');
+        // Vérifier si le commentaire est déjà approuvé
+        if ($message->approved !== 1) {
+            $message->approved = 1;
+            $message->save();
         }
+    
+        // Retourner une réponse JSON
+        return response()->json([
+            'success' => true,
+            'message' => 'Comment approved successfully!',
+            'status' => 'approved'
+        ]);
+    }
+    
+    public function rejectComment(Post $post, Message $message)
+    {
+        // Vérifier que le message appartient bien à l'article
+        if ($message->post_id !== $post->id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthorized action.'
+            ], 403);
+        }
+    
+        // Vérifier si le commentaire est déjà rejeté
+        if ($message->approved !== 0) {
+            $message->approved = 0;
+            $message->save();
+        }
+    
+        // Retourner une réponse JSON
+        return response()->json([
+            'success' => true,
+            'message' => 'Comment rejected successfully!',
+            'status' => 'rejected'
+        ]);
+    }
+
+        public function updateArticleStatus(Request $request, $id)
+    {
+        // Debug : vérifier les données reçues
+        \Log::info('Requête reçue pour l\'article ' . $id, $request->all());
+
+        // Validation de l'action
+        $validated = $request->validate([
+            'action' => 'required|in:accept,reject,propose',
+        ]);
+
+        \Log::info('Action validée : ' . $validated['action']);
+
+        // Récupérer l'article
+        $post = Post::findOrFail($id);
+
+        // Debug : vérifier si l'article est trouvé
+        \Log::info('Article trouvé : ' . $post->title);
+
+        // Mise à jour du statut
+        switch ($request->action) {
+            case 'accept':
+                $post->stat = 'Accepted';
+                break;
+            case 'reject':
+                $post->stat = 'Rejected';
+                break;
+            case 'propose':
+                $post->stat = 'Proposed';
+                break;
+        }
+
+        $post->save();
+
+        \Log::info('Statut mis à jour : ' . $post->stat);
+
+        // Retourner une réponse JSON
+        return response()->json([
+            'success' => true,
+            'message' => 'Statut mis à jour avec succès',
+            'status' => $post->stat,
+        ]);
+    }
+
+public function blockManager($id)
+{
+    $manager = User::where('role', 'manager')->findOrFail($id);
+
+    // Block the manager
+    $manager->is_blocked = true;
+    $manager->save();
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Manager blocked successfully.'
+    ], 200);
 }
-        
+public function unblockManager($id)
+{
+    $manager = User::where('role', 'manager')->findOrFail($id);
+
+    // Unblock the manager
+    $manager->is_blocked = false;
+    $manager->save();
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Manager unblocked successfully.'
+    ], 200);
+}
+
+public function addManager(Request $request)
+{
+    try {
+        // Log pour voir les données reçues
+        \Log::info($request->all());
+
+        // Vérifier si la catégorie est envoyée
+        if (!$request->has('category')) {
+            return response()->json(['success' => false, 'message' => 'Category is missing.'], 400);
+        }
+
+        // Créer le manager
+        $manager = Manager::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => bcrypt($request->password),
+        ]);
+
+        // Créer la catégorie et l'associer
+        $category = Category::create([
+            'name' => $request->category,
+            'manager_id' => $manager->id,
+        ]);
+
+        return response()->json(['success' => true, 'manager' => $manager, 'category' => $category]);
+    } catch (\Exception $e) {
+        \Log::error($e);
+        return response()->json(['success' => false, 'message' => 'Server error.'], 500);
+    }
+}
+}

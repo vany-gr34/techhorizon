@@ -42,7 +42,7 @@
             <div class="collection-container">
                 <h3>
                     {{ $collection->collection }}
-                    <input type="radio" name="active_collection" value="{{ $collection->id }}">
+                    <input type="radio" name="active_collection" class="radio-custom"  value="{{ $collection->id }}">
                 </h3>
                 <div class="articles-container">
                     @foreach ($collection->posts as $post)

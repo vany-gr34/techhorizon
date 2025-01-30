@@ -1,28 +1,27 @@
 
 <link rel="stylesheet" href="{{ asset('css/sub.css') }}">
 <tbody>
-    @forelse ($subscribers as $subscriber)
-        <tr id="subscriber-{{ $subscriber->id }}">
-            <td>{{ $subscriber->name }}</td>
-            <td>{{ $subscriber->email }}</td>
-            <td>
-                <a href="{{ route('editor.subscribers.delete', $subscriber->id) }}" 
-                   onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet abonné ?')">Supprimer</a>
-            </td>
-            <td>
-                @if ($subscriber->is_blocked)
-                    <a href="#" onclick="toggleBlockSubscriber('{{ $subscriber->id }}', 'unblock'); return false;">Unblock</a>
-                @else
-                    <a href="#" onclick="toggleBlockSubscriber('{{ $subscriber->id }}', 'block'); return false;">Block</a>
-                @endif
-            </td>
-            <td>
-                <a href="#" onclick="openModal('{{ $subscriber->id }}','{{ $subscriber->name }}', '{{ $subscriber->email }}')">Modifier</a>
-            </td>
-        </tr>
-    @empty
-        <tr>
-            <td colspan="4">No subscribers found.</td>
-        </tr>
-    @endforelse
+@forelse ($subscribers as $subscriber)
+            <tr id="subscriber-{{ $subscriber->id }}">
+                <td>{{ $subscriber->name }}</td>
+                <td>{{ $subscriber->email }}</td>
+                <td>
+                    <span class="status-indicator {{ $subscriber->is_blocked ? 'status-blocked' : 'status-active' }}"></span>
+                    {{ $subscriber->is_blocked ? 'Blocked' : 'Active' }}
+                </td>
+                <td>
+                    <div class="action-buttons">
+                        <button class="btn btn-primary" onclick="openModal('{{ $subscriber->id }}','{{ $subscriber->name }}', '{{ $subscriber->email }}')">Edit</button>
+                        <button class="btn btn-warning" onclick="toggleBlockSubscriber('{{ $subscriber->id }}', '{{ $subscriber->is_blocked ? 'unblock': 'block'}}')">
+                            {{ $subscriber->is_blocked ? 'Unblock' : 'Block' }}
+                        </button>
+                        <button class="btn btn-danger" onclick="deleteSubscriber('{{ $subscriber->id }}')">Delete</button>
+                    </div>
+                </td>
+            </tr>
+        @empty
+            <tr>
+                <td colspan="4">No subscribers found.</td>
+            </tr>
+        @endforelse
 </tbody>

@@ -29,20 +29,16 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Category::class, 'category_id'); // Vérifie bien la clé étrangère
     }
-    
-
-
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
-    
+    public function messages()
+     {
+         return $this->hasMany(Message::class)->where('approved',true);
+ }
+
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
@@ -58,5 +54,9 @@ public function postsHistory()
 {
     return $this->hasMany(PostUserHistory::class);
 }
+public function isManager()
+    {
+        return $this->role === 'manager';
+    }
 }
 

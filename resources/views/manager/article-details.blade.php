@@ -1,11 +1,13 @@
 @extends('manager.layout')
 
-
 @section('title', $post->title)
 @section('header-title', 'DevOps Category')
 
 @section('content')
+<meta name="csrf-token" content="{{ csrf_token() }}">
 <link rel="stylesheet" href="{{ asset('css/articleDetails.css') }}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+
 <div class="article-container">
     <div class="article-details">
         <div class="article-header">
@@ -13,40 +15,45 @@
             <p><strong>Author:</strong> {{ $post->user ? $post->user->name : 'Unknown' }}</p>
             <p><strong>Publication date:</strong> {{ $post->created_at ? $post->created_at->format('d/m/Y') : 'N/A' }}</p>
         </div>
-        
+
         <div class="content">
-            {{ $post->content }}
-            
-        </div>
-        
-        <div class="rating-section">
-            <p><strong>Rating:</strong> {{ $post->mostRatedArticlesCount ?? 'No ratings yet' }}</p>
+            {!! nl2br(e($post->content)) !!}
         </div>
     </div>
 
     <div class="comments-section">
         <h2>Comments</h2>
-        @forelse($post->comments as $comment)
-            <div class="comment">
+        @forelse($post->messages as $message)
+            <div class="comment" id="comment-{{ $message->id }}">
                 <div class="comment-content">
-                    <p><strong>{{ $comment->user ? $comment->user->name : 'Anonymous' }}:</strong> {{ $comment->content }}</p>
-                    <p><small>{{ $comment->created_at ? $comment->created_at->format('d/m/Y H:i') : 'N/A' }}</small></p>
+                    <p><strong>{{ $message->user ? $message->user->name : 'Anonymous' }}:</strong> {{ $message->content }}</p>
+                    <p><small>{{ $message->created_at ? $message->created_at->format('d/m/Y H:i') : 'N/A' }}</small></p>
                 </div>
-                
+
                 @if(auth()->user() && auth()->user()->isManager())
-                    @if(!$comment->approved)
-                        <div class="comment-actions">
-                            <form action="{{ route('manager.comments.approve', [$post, $comment]) }}" method="POST">
+                    <div class="comment-actions">
+                        <!-- Affichage du statut -->
+                        @if($message->is_approved === 1)
+                            <span class="status-approved" id="status-{{ $message->id }}">Approved <i class="fas fa-check-circle"></i></span>
+                        @elseif($message->is_approved === 0)
+                            <span class="status-rejected" id="status-{{ $message->id }}">Rejected <i class="fas fa-times-circle"></i></span>
+                        @else
+                            <span class="status-pending" id="status-{{ $message->id }}">Pending <i class="fas fa-clock"></i></span>
+                        @endif
+
+                        <!-- Boutons d'actions seulement si le commentaire est en attente -->
+                        @if(is_null($message->is_approved))
+                            <form action="{{ route('manager.messages.approve', [$post->id, $message->id]) }}" method="POST" class="d-inline" id="approve-form-{{ $message->id }}">
                                 @csrf
-                                <button type="submit" class="btn-approve">Approve</button>
+                                <button type="button" class="btn-approve" onclick="approveMessage('{{ $message->id }}')">Approve</button>
                             </form>
-                            <form action="{{ route('manager.comments.reject', [$post, $comment]) }}" method="POST">
+                            <form action="{{ route('manager.messages.reject', [$post->id, $message->id]) }}" method="POST" class="d-inline" id="reject-form-{{ $message->id }}">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="btn-reject">Reject</button>
+                                <button type="button" class="btn-reject" onclick="rejectMessage('{{ $message->id }}')">Reject</button>
                             </form>
-                        </div>
-                    @endif
+                        @endif
+                    </div>
                 @endif
             </div>
         @empty
@@ -54,4 +61,45 @@
         @endforelse
     </div>
 </div>
+
+<script>
+    function approveMessage(id) {
+        fetch(`/post/{{ $post->id }}/message/${id}/approve`, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                'Accept': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.querySelector(`#status-${id}`).innerHTML = 'Approved <i class="fas fa-check-circle"></i>';
+                document.querySelector(`#approve-form-${id}`).remove();
+                document.querySelector(`#reject-form-${id}`).remove();
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    }
+
+    function rejectMessage(id) {
+        fetch(`/post/{{ $post->id }}/message/${id}/reject`, {
+            method: 'DELETE',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                'Accept': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.querySelector(`#status-${id}`).innerHTML = 'Rejected <i class="fas fa-times-circle"></i>';
+                document.querySelector(`#approve-form-${id}`).remove();
+                document.querySelector(`#reject-form-${id}`).remove();
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    }
+</script>
+
 @endsection

@@ -234,8 +234,8 @@ li a:hover {
         <div id="bar">
         <ul> 
         <li> <a href="{{ route('user.space') }}"> Profil</a>   </li>
-            <li> <a href="{{ route('posts.create') }}">add </a></li>
-            <li>  <a href="{{ route('posts.status') }}">my Articles </button></li>
+            <li> <a href="{{ route('posts.create') }}">Add Article </a></li>
+            <li>  <a href="{{ route('posts.status') }}">My Articles </button></li>
             <li></li>
         </ul></div>
     </div>

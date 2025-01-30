@@ -37,7 +37,7 @@
                 <button type="submit">Envoyer</button>
             </form>
             <div class="chat-messages">
-                @foreach($post->messages as $message)
+                @foreach($post-> approvedMessages as $message)
                     <div class="message">
                         <div class="message-header">
                             <strong>{{ $message->user->name }}</strong>

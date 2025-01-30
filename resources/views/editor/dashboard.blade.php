@@ -35,12 +35,12 @@
         <p>{{ $proposedCount }}</p>
     </div>
 </a> 
-        <a href="{{ route('categories.index') }}"  style="text-decoration: none;">
+
             
         <div class="stat-box">
             <h3>categories</h3>
             <p>{{ $catgoryCount }}</p>
-        </div></a>
+        </div>
 
 
         <a href="{{ route('editor.subscribers') }}"  style="text-decoration: none;"><div class="stat-box">

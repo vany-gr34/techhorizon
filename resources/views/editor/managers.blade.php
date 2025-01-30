@@ -18,7 +18,7 @@
     <input type="button" value="Add Manager" onclick="openAddManagerModal()">
 </div>
 
-<table id="managersTable">
+<table id="ManagersTable">
     <thead>
         <tr>
             <th>Manager Name</th>
@@ -36,11 +36,11 @@
                 <td>
                     <div class="action-buttons">
                         @if ($category->manager)
-                            @if ($category->manager->is_blocked)
-                                <button class="btn btn-warning" onclick="toggleBlockManager('{{ $category->manager->id }}', 'unblock')">Unblock</button>
-                            @else
-                                <button class="btn btn-warning" onclick="toggleBlockManager('{{ $category->manager->id }}', 'block')">Block</button>
-                            @endif
+                           
+                        <button class="btn btn-warning" 
+    onclick="toggleBlockManager('{{ $category->manager->id }}', '{{ $category->manager->is_blocked ? 'unblock' : 'block' }}')">
+    {{ $category->manager->is_blocked ? 'Unblock' : 'Block' }}
+</button>
                         @endif
                         <button class="btn btn-danger" onclick="deleteCategory('{{ $category->id }}')">Delete Category</button>
                     </div>
@@ -71,7 +71,7 @@
                 <label for="categoryName">Category Name:</label>
                 <input type="text" id="categoryName" required>
             </div>
-            <button type="button" onclick="addManager()">Add Manager</button>
+            <button type="submit" >Add Manager</button>
         </form>
     </div>
 </div>
@@ -125,42 +125,10 @@ function deleteCategory(categoryId) {
         document.getElementById('addManagerModal').style.display = 'none';
     }
 
-    function addManager() {
-    const name = document.getElementById('managerName').value;
-    const email = document.getElementById('managerEmail').value;
-    const password = document.getElementById('managerPassword').value;
-    const categoryName = document.getElementById('categoryName').value;
-    const token = document.querySelector('meta[name="csrf-token"]').content;
 
-    console.log({ name, email, password, categoryName }); // Debug
 
-    fetch(`/managers/add`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': token
-        },
-        body: JSON.stringify({ name, email, password, categoryName })
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-        return response.json();
-    })
-    .then(data => {
-        if (data.success) {
-            alert('Manager and category added successfully.');
-            location.reload();
-        } else {
-            alert(data.message || 'An error occurred.');
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('A network error occurred.');
-    });
-}
+
+   
     function searchManagers() {
     const query = document.getElementById('searchInput').value;
 
@@ -185,12 +153,61 @@ function deleteCategory(categoryId) {
         console.error('Erreur:', error);
     });
 }
-function toggleBlockManager(managerId, action) {
-    if (!managerId) {
-        alert('No manager assigned to this category.');
-        return;
-    }
 
+document.addEventListener('DOMContentLoaded', function () {
+    const addSubscriberForm = document.getElementById('addManagerForm');
+    const ManagersTable = document.getElementById('ManagersTable').getElementsByTagName('tbody')[0];
+
+    addSubscriberForm.addEventListener('submit', function (e) {
+        e.preventDefault(); 
+
+        const formData = new FormData(addSubscriberForm);
+        console.log("Sending data:", Object.fromEntries(formData)); 
+
+        fetch(`/managers/add`, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            },
+            body: formData,
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log("Server response:", data);
+
+            if (data.success) {
+                const newRow = ManagersTable.insertRow();
+                const nameCell = newRow.insertCell(0);
+                const emailCell = newRow.insertCell(1);
+                const catcell=newRow.insertCell(2)
+                const actionsCell = newRow.insertCell(3);
+                const blockCell = newRow.insertCell(4);
+
+                nameCell.textContent = data.manager.name;
+                emailCell.textContent = data.manager.email;
+                catcell.textContent=data.manager.category;
+                actionsCell.innerHTML = `<a href="#" onclick="deleteManager(${data.manager.id}); return false;">Supprimer</a>`;
+                blockCell.innerHTML = `<a href="#" onclick="toggleBlockManager(${data.manager.id}, 'block'); return false;">Block</a>`;
+
+                addSubscriberForm.reset();
+                closeAddManagerModal();
+                alert('Manager added successfully!');
+                location.reload(); 
+            } else {
+                alert(data.message || 'An error occurred. Please try again.');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred. Please try again.');
+        });
+    });
+});
+
+
+function toggleBlockManager(managerId, action) {
+   
+    
     const confirmationMessage = action === 'block' 
         ? 'Are you sure you want to block this manager?' 
         : 'Are you sure you want to unblock this manager?';
@@ -231,7 +248,7 @@ function toggleBlockManager(managerId, action) {
                 }
             }
         } else {
-            alert(data.message || 'An error occurred.');
+            alert(data.message || 'An error occurred89.');
         }
     })
     .catch(error => {

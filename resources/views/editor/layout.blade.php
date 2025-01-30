@@ -30,7 +30,7 @@
                     <li><a href="{{ route('editor.dashboard') }}">Dashboard</a></li>
                     <li><a href="{{ route('editor.subscribers') }}">Subscribers</a></li>
                     <li><a href="{{ route('collections.index') }}">collections</a></li>
-                    <li><a href="{{ route('logout') }}">Logout</a></li>
+        
                 </ul>
             </nav>
         </aside>

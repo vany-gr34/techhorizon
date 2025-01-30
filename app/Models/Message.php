@@ -10,12 +10,12 @@ class Message extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['user_id', 'post_id', 'content'];
+    protected $fillable = ['user_id', 'post_id', 'content','approved'];
 
     // Relation avec les posts
     public function post()
     {
-        return $this->belongsTo(Post::class);
+        return $this->belongsTo(Post::class,'post_id');
     }
 
     // Relation avec les utilisateurs

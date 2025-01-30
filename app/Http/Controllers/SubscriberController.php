@@ -10,8 +10,6 @@ use App\Models\Collection;
 use App\Models\PostUserHistory;
 use App\Models\CategoryUser;
 
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 
 class SubscriberController extends Controller
@@ -275,69 +273,75 @@ public function addMessage(Request $request, $id)
  
     }
 
-    
+
+
+
     public function toggleSubscription(Category $category)
-    {   
-        // Vérifier si l'utilisateur est connecté
+    {
         $user = Auth::user();
-        if (!$user) {
-            return response()->json(['message' => 'Unauthorized'], 401);
+
+        if ($user->categories()->where('category_id', $category->id)->exists()) {
+            // Si l'utilisateur est déjà abonné, il se désabonne
+            $user->categories()->detach($category->id);
+            return response()->json(['subscribed' => false]);
+        } else {
+            // Sinon, il s'abonne
+            $user->categories()->attach($category->id);
+            return response()->json(['subscribed' => true]);
         }
+    }
+
+  
+    public function showSubscribers()
+    {
+        // Récupérer le manager connecté
+        $manager = auth()->user();
     
-        // Logs pour vérifier que les ID sont corrects
-        Log::info("Utilisateur ID: " . $user->id);
-        Log::info("Catégorie ID: " . $category->id);
+        // Récupérer la catégorie du manager
+        $category = Category::where('user_id', $manager->id)->first();
     
-        DB::beginTransaction();
-        try {
-            // Vérifier si l'utilisateur est déjà abonné
-            $isSubscribed = DB::table('category_user')
-                ->where('user_id', $user->id)
+        if ($category) {
+            // Récupérer les abonnés associés à la catégorie du manager
+            $subscribers = CategoryUser::with('user') // Charger la relation 'user'
                 ->where('category_id', $category->id)
-                ->exists();
+                ->get();
     
-            if ($isSubscribed) {
-                // Désabonner l'utilisateur
-                $user->categories()->detach($category->id);
-                Log::info("Désabonnement réussi");
-                $subscribed = false;
-            } else {
-                // Abonner l'utilisateur
-                $user->categories()->attach($category->id);
-                Log::info("Abonnement réussi");
-                $subscribed = true;
+            if ($subscribers->isEmpty()) {
+                // Si aucun abonné n'est trouvé
+                return view('manager.subscribers')->with('message', 'No subscribers found.');
             }
-    
-            DB::commit();
-            return response()->json(['isSubscribed' => $subscribed]);
-        } catch (\Exception $e) {
-            DB::rollBack();
-            Log::error("Erreur dans toggleSubscription: " . $e->getMessage());
-            return response()->json(['message' => 'Erreur serveur'], 500);
+        } else {
+            // Si aucune catégorie n'est trouvée
+            return view('manager.subscribers')->with('message', 'Category not found.');
         }
+    
+        // Retourner la vue avec les abonnés
+        return view('manager.subscribers', compact('subscribers','category','manager'));
     }
-    public function checkSubscription(Category $category)
+    public function destroy($userId, $categoryId)
 {
-    $user = Auth::user();
+    // Récupérer l'utilisateur par son ID
+    $user = User::find($userId);
+
+    // Vérifier si l'utilisateur existe
     if (!$user) {
-        return response()->json(['message' => 'Unauthorized'], 401);
+        return redirect()->back()->with('error', 'User not found.');
     }
 
-    $isSubscribed = $user->categories()->where('category_id', $category->id)->exists();
-    return response()->json(['isSubscribed' => $isSubscribed]);
+    // Récupérer la catégorie par son ID
+    $category = Category::find($categoryId);
+
+    // Vérifier si la catégorie existe
+    if (!$category) {
+        return redirect()->back()->with('error', 'Category not found.');
+    }
+
+    // Supprimer l'abonnement (relation dans la table pivot)
+    $user->categories()->detach($categoryId);
+
+    // Retourner un message de succès
+    return redirect()->back()->with('success', 'Subscriber deleted successfully.');
 }
-    
 
-public function destroy($id)
-{
-    // Suppression du subscriber
-    $subscriber = User::findOrFail($id);
-    $subscriber->delete();
 
-    // Redirection avec un message de succès
-    return redirect()->route('subscribers.index')->with('success', 'Subscriber deleted successfully.');
-
-        return redirect()->route('subscribers.index')->with('error', 'Subscriber not found.');
-    }
-    
-}    
+}

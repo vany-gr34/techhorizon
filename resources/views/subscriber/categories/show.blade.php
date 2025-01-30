@@ -211,68 +211,31 @@ p {
 </div>
 
 
+
 <script>
- // Au chargement de la page, vérifiez l'état de l'abonnement
-document.addEventListener('DOMContentLoaded', function () {
-    let categoryId = 1; // Remplacez par l'ID de la catégorie actuelle
-    checkSubscriptionStatus(categoryId);
-});
-
-// Fonction pour vérifier l'état de l'abonnement
-function checkSubscriptionStatus(categoryId) {
-    let url = `/categories/${categoryId}/check-subscription`;
-
-    fetch(url, {
-        method: 'GET',
-        headers: {
-            'X-Requested-With': 'XMLHttpRequest',
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        updateButton(data.isSubscribed);
-    })
-    .catch(error => {
-        console.error('Fetch error:', error);
-    });
-}
-
-// Fonction pour basculer l'abonnement
-function toggleSubscription(categoryId) {
-    let url = `/categories/${categoryId}/sub`;
-
-    fetch(url, {
-        method: 'POST',
-        headers: {
-            'X-Requested-With': 'XMLHttpRequest',
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({})
-    })
-    .then(response => response.json())
-    .then(data => {
-        updateButton(data.isSubscribed);
-    })
-    .catch(error => {
-        console.error('Fetch error:', error);
-    });
-}
-
-// Fonction pour mettre à jour le bouton
-function updateButton(isSubscribed) {
-    let button = document.getElementById('subscribeButton');
-    if (isSubscribed) {
-        button.innerText = 'Se désabonner';
-        button.classList.remove('btn-primary');
-        button.classList.add('btn-danger');
-    } else {
-        button.innerText = 'S\'abonner';
-        button.classList.remove('btn-danger');
-        button.classList.add('btn-primary');
+    function toggleSubscription(categoryId) {
+        fetch(`/categories/${categoryId}/subscribe`, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                'Content-Type': 'application/json',
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            const button = document.getElementById('subscribeButton');
+            if (data.subscribed) {
+                button.classList.remove('btn-primary');
+                button.classList.add('btn-danger');
+                button.textContent = 'Se désabonner';
+            } else {
+                button.classList.remove('btn-danger');
+                button.classList.add('btn-primary');
+                button.textContent = 'S\'abonner';
+            }
+        })
+        .catch(error => console.error('Erreur:', error));
     }
-}
-
 </script>
+
 @endsection

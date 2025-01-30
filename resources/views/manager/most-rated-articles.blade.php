@@ -1,5 +1,4 @@
 @extends('manager.layout')
-@extends('manager.layout')
 @section('header-title', 'Most Rated Articles')
 @section('content')
 <link href="{{ asset('css/toprated.css') }}" rel="stylesheet">

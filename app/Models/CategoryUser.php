@@ -1,48 +1,47 @@
-
-
 <?php
 
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
+namespace App\Models;
 
-class CreateCategoryUserTable extends Migration
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class CategoryUser extends Model
 {
-    /**
-     * Run the migrations.
-     *
-     * @return void
-     */
-    public function up()
+    use HasFactory;
+
+    protected $table = 'category_user';
+
+    protected $fillable = ['user_id', 'category_id'];
+
+    public function index()
+{
+    // Récupérer tous les abonnés de la catégorie du manager connecté
+    $subscribers = CategoryUser::with('user', 'category')->get();
+
+    return view('manager.subscribers', compact('subscribers'));
+}
+
+    // Relation avec l'utilisateur
+    public function user()
     {
-        Schema::create('category_user', function (Blueprint $table) {
-            $table->id();
-            $table->unsignedBigInteger('user_id');
-            $table->unsignedBigInteger('category_id');
-            $table->string('role'); // Pour spécifier le rôle de l'utilisateur (par exemple 'subscriber')
-            $table->timestamps();
-
-            // Clés étrangères
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-            $table->foreign('category_id')->references('id')->on('categories')->onDelete('cascade');
-
-            // Clé unique pour éviter des doublons
-            $table->unique(['user_id', 'category_id']);
-        });
+        return $this->belongsTo(User::class);
     }
 
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
-    public function down()
+    // Relation avec la catégorie
+    public function category()
     {
-        Schema::dropIfExists('category_user');
- }
-// Category Model
+            return $this->belongsTo(Category::class);
+}
+public function users()
+{
+    return $this->belongsToMany(User::class, 'category_user', 'category_id', 'user_id');
+}
 
-protected $fillable = ['user_id', 'category_id'];
+
+
+    
+
+
 
 
 

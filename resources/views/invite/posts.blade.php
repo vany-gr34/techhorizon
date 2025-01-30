@@ -11,7 +11,7 @@
         <ul> 
         <li><a href="#aboutus">about us</a></li>
             <li><a href="{{ route('public.index')}}"> Categories</a></li>
-            <li><a href="{{ route('inscription.step1') }}">Join Us</a></li>
+            <li><a href="{{ route('register.step1') }}">Join Us</a></li>
             <li><a href="{{ url('/login') }}">Login</a></li>
         </ul></div>
     </div>
